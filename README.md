@@ -45,3 +45,6 @@ Put the following at the end of your ~/.bashrc
 command_not_found_handle() {commandfinder $@}
 ```
 
+## TODO
+
+monthly regenerate cache
