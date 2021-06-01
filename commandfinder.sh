@@ -60,7 +60,7 @@ else
     cd ~/.cache/commandfinder || exit 1
 fi
 
-FOUNDPACKAGES="$(rg "$1 " . | sed 's/^[^ ]* //g' | sort -u | sed 's/^/    sudo pacman -S /g')"
+FOUNDPACKAGES="$(rg " $1$" . | sed 's/ [^ ]*$//g' | sed 's/^.*://g' | sort -u | sed 's/^/    sudo pacman -S /g')"
 [ -z "$FOUNDPACKAGES" ] && exit
 
 if [ "$(wc -l <<<"$FOUNDPACKAGES")" -gt 1 ]; then
