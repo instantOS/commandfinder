@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
 # lightweight command-not-found handler for Arch Linux
 
-if [ -z "$1" ]; then
-    exit
-fi
-
 gencache() {
     echo 'generating package cache'
     pkgfile -l -r '.*' | sed 's/\t/ /g' | grep -E '(/usr/bin/|/usr/local/bin/| /bin/|/usr/lib/jvm/default/bin/)..' | sort -u | sed 's~/usr/bin/~~g' | sed 's/  */ /g' >packages.txt
@@ -27,7 +23,23 @@ preparecache() {
     fi
 }
 
-echo -e "$(grep -o '[^/]*$' <<< "$SHELL"): command $1 not found\n"
+case "$1" in
+--help)
+    echo 'usage: commandfinder commandname'
+    ;;
+-h)
+    echo 'usage: commandfinder commandname'
+    ;;
+cache)
+    mkdir "${2:-commandfindercache}"
+    cd "${2:-commandfindercache}" || exit 1
+    preparecache
+    gencache
+    exit
+    ;;
+esac
+
+echo -e "$(grep -o '[^/]*$' <<<"$SHELL"): command $1 not found\n"
 
 if ! [ -e ~/.cache/commandfinder/confirm.txt ]; then
     echo 'inititlizing package cache'
