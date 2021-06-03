@@ -48,6 +48,14 @@ if ! [ -e ~/.cache/commandfinder/confirm.txt ]; then
     export USEDEFAULTCACHE="true"
     preparecache
     gencache &
+else
+    {
+        if command -v idate; then
+            if idate m commandfindercache; then
+                gencache
+            fi
+        fi
+    } &>/dev/null &
 fi
 
 if [ -n "$USEDEFAULTCACHE" ]; then
@@ -55,7 +63,20 @@ if [ -n "$USEDEFAULTCACHE" ]; then
         echo 'commandfinder cache not found'
         exit 1
     fi
-    cd /usr/share/commandfinder/cache || exit 1
+
+    mkdir -p ~/.cache/commandfinderdefault
+
+    # only link caches for installed repos
+    while read -r repo; do
+        if [ -e /usr/share/commandfinder/cache/"$repo" ]; then
+            if ! [ -e ~/.cache/commandfinderdefault/"$repo" ]; then
+                ln -s /usr/share/commandfinder/cache/"$repo" ~/.cache/commandfinderdefault/
+            fi
+        fi
+    done <<<"$(cat /etc/pacman.conf | grep '^\[.*\]' | grep -v options | grep -o '[^][]*')"
+
+    cd ~/.cache/commandfinderdefault || exit 1
+
 else
     cd ~/.cache/commandfinder || exit 1
 fi
