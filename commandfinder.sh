@@ -90,4 +90,6 @@ else
     echo -e "\e[34m\e[1mIt can be installed by using the following command\e[0m"
 fi
 
-echo -e "$FOUNDPACKAGES\n"
+echo ""
+
+echo -e "\u001b[33m$FOUNDPACKAGES\n"
