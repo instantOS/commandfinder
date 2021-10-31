@@ -81,7 +81,15 @@ else
     cd ~/.cache/commandfinder || exit 1
 fi
 
-FOUNDPACKAGES="$(rg " $1$" . | sed 's/ [^ ]*$//g' | sed 's/^.*://g' | sort -u | sed 's/^/    sudo pacman -S /g')"
+if command -v yay &> /dev/null
+then
+    INSTALLCOMMAND="yay -S"
+else
+    INSTALLCOMMAND="sudo pacman -S"
+fi
+
+FOUNDPACKAGES="$(rg " $1$" . | sed 's/ [^ ]*$//g' | sed 's/^.*://g' | sort -u | sed "s/^/    $INSTALLCOMMAND /g")"
+
 [ -z "$FOUNDPACKAGES" ] && exit
 
 if [ "$(wc -l <<<"$FOUNDPACKAGES")" -gt 1 ]; then
