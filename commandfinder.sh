@@ -23,12 +23,14 @@ preparecache() {
     fi
 }
 
+usage() {
+    echo 'usage: commandfinder commandname'
+}
+
 case "$1" in
---help)
-    echo 'usage: commandfinder commandname'
-    ;;
--h)
-    echo 'usage: commandfinder commandname'
+-h|--help)
+    usage
+    exit
     ;;
 cache)
     mkdir "${2:-commandfindercache}"
@@ -37,6 +39,10 @@ cache)
     gencache
     exit
     ;;
+'')
+    echo 'commandfinder: requires an argument' >&2
+    usage >&2
+    exit 1
 esac
 
 echo -e "$(grep -o '[^/]*$' <<<"$SHELL"): command $1 not found\n"
