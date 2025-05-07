@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # lightweight command-not-found handler for Arch Linux
 
+set -e
+
 CACHEDIR="${XDG_CACHE_HOME:-$HOME/.cache}/commandfinder"
 
 [ -d "$CACHEDIR" ] || mkdir -p "$CACHEDIR"
-
-cd "$CACHEDIR" || exit 1
 
 gencache() {
     echo 'generating package cache'
@@ -25,7 +25,7 @@ gencache() {
 preparecache() {
     if pkgfile vim 2>&1 | grep -q 'No repo files found'; then
         sudo systemctl enable pkgfile-update.timer
-        sudo pkgfile --update || exit 1
+        sudo pkgfile --update
     fi
 }
 
@@ -40,7 +40,7 @@ case "$1" in
     ;;
 cache)
     mkdir "${2:-commandfindercache}"
-    cd "${2:-commandfindercache}" || exit 1
+    cd "${2:-commandfindercache}"
     preparecache
     gencache
     exit
@@ -55,8 +55,7 @@ echo -e "$(grep -o '[^/]*$' <<<"$SHELL"): command $1 not found\n"
 
 if ! [ -e ~/.cache/commandfinder/confirm.txt ]; then
     echo 'inititlizing package cache'
-    mkdir -p ~/.cache/commandfinder/
-    cd ~/.cache/commandfinder || exit 1
+    cd "$CACHEDIR"
     export USEDEFAULTCACHE="true"
     preparecache
     gencache &
@@ -64,6 +63,7 @@ else
     {
         if command -v idate; then
             if idate m commandfindercache; then
+                cd "$CACHEDIR"
                 gencache
             fi
         fi
@@ -87,10 +87,10 @@ if [ -n "$USEDEFAULTCACHE" ]; then
         fi
     done <<<"$(cat /etc/pacman.conf | grep '^\[.*\]' | grep -v options | grep -o '[^][]*')"
 
-    cd ~/.cache/commandfinderdefault || exit 1
+    cd ~/.cache/commandfinderdefault
 
 else
-    cd ~/.cache/commandfinder || exit 1
+    cd ~/.cache/commandfinder
 fi
 
 if command -v yay &> /dev/null
