@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 # lightweight command-not-found handler for Arch Linux
 
+CACHEDIR="${XDG_CACHE_HOME:-$HOME/.cache}/commandfinder"
+
+[ -d "$CACHEDIR" ] || mkdir -p "$CACHEDIR"
+
+cd "$CACHEDIR" || exit 1
+
 gencache() {
     echo 'generating package cache'
     pkgfile -l -r '.*' | sed 's/\t/ /g' | grep -E '(/usr/bin/|/usr/local/bin/| /bin/|/usr/lib/jvm/default/bin/)..' | sort -u | sed 's~/usr/bin/~~g' | sed 's/  */ /g' >packages.txt
