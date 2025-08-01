@@ -34,21 +34,22 @@ usage() {
 }
 
 case "$1" in
--h|--help)
-    usage
-    exit
-    ;;
-cache)
-    mkdir "${2:-commandfindercache}"
-    cd "${2:-commandfindercache}"
-    preparecache
-    gencache
-    exit
-    ;;
-'')
-    echo 'commandfinder: requires an argument' >&2
-    usage >&2
-    exit 1
+    -h | --help)
+        usage
+        exit
+        ;;
+    cache)
+        mkdir "${2:-commandfindercache}"
+        cd "${2:-commandfindercache}"
+        preparecache
+        gencache
+        exit
+        ;;
+    '')
+        echo 'commandfinder: requires an argument' >&2
+        usage >&2
+        exit 1
+        ;;
 esac
 
 echo -e "$(grep -o '[^/]*$' <<<"$SHELL"): command $1 not found\n"
@@ -93,8 +94,7 @@ else
     cd ~/.cache/commandfinder
 fi
 
-if command -v yay &> /dev/null
-then
+if command -v yay &>/dev/null; then
     INSTALLCOMMAND="yay -S"
 else
     INSTALLCOMMAND="sudo pacman -S"
