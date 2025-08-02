@@ -8,7 +8,7 @@ CACHEDIR="${XDG_CACHE_HOME:-$HOME/.cache}/commandfinder"
 
 gencache() {
     echo 'generating package cache'
-    pacman -Fl | grep -E ' (/usr/bin/|/usr/local/bin/|/bin/|/usr/lib/jvm/default/bin/)..' "$CACHEDIR/packages.txt"
+    pacman -Fl | grep -E '(/usr/bin/|/usr/local/bin/|/bin/|/usr/lib/jvm/default/bin/)..' > "$CACHEDIR/packages.txt"
     echo 'done' >"$CACHEDIR/confirm.txt"
 }
 
@@ -26,7 +26,6 @@ usage() {
     echo 'usage: commandfinder commandname'
 }
 
-echo -e "$(grep -o '[^/]*$' <<<"$SHELL"): command $1 not found\n"
 
 if ! [ -e "$CACHEDIR/confirm.txt" ]; then
     echo 'inititlizing package cache'
@@ -52,7 +51,7 @@ fi
 
 search_package() {
     cd "$CACHEDIR"
-    FOUNDPACKAGES="$(rg " $1$" . | sed 's/ [^ ]*$//g' | sed 's/^.*://g' | sort -u | sed "s/^/    $INSTALLCOMMAND /g")"
+    FOUNDPACKAGES="$(rg "$1$" . | sed 's/ [^ ]*$//g' | sed 's/^.*://g' | sort -u | sed "s/^/    $INSTALLCOMMAND /g")"
     if [ -z "$FOUNDPACKAGES" ]; then
         echo "$1 not found"
         return 1
@@ -85,6 +84,7 @@ cache)
     exit 1
     ;;
 *)
+    echo -e "$(grep -o '[^/]*$' <<<"$SHELL"): command $1 not found\n"
     search_package "$1"
     exit
     ;;
