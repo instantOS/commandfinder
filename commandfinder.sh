@@ -8,7 +8,7 @@ CACHEDIR="${XDG_CACHE_HOME:-$HOME/.cache}/commandfinder"
 
 gencache() {
     echo 'generating package cache'
-    pacman -Fl | grep -E '(/usr/bin/|/usr/local/bin/|/bin/|/usr/lib/jvm/default/bin/)..' > "$CACHEDIR/packages.txt"
+    pacman -Fl | grep -E '(/usr/bin/|/usr/local/bin/|/bin/|/usr/lib/jvm/default/bin/)..' >"$CACHEDIR/packages.txt"
     echo 'done' >"$CACHEDIR/confirm.txt"
 }
 
@@ -25,7 +25,6 @@ preparecache() {
 usage() {
     echo 'usage: commandfinder commandname'
 }
-
 
 if ! [ -e "$CACHEDIR/confirm.txt" ]; then
     echo 'inititlizing package cache'
@@ -69,23 +68,23 @@ search_package() {
 }
 
 case "$1" in
--h | --help)
-    usage
-    exit
-    ;;
-cache)
-    preparecache || exit
-    gencache
-    exit
-    ;;
-'')
-    echo 'commandfinder: requires an argument' >&2
-    usage >&2
-    exit 1
-    ;;
-*)
-    echo -e "$(grep -o '[^/]*$' <<<"$SHELL"): command $1 not found\n"
-    search_package "$1"
-    exit
-    ;;
+    -h | --help)
+        usage
+        exit
+        ;;
+    cache)
+        preparecache || exit
+        gencache
+        exit
+        ;;
+    '')
+        echo 'commandfinder: requires an argument' >&2
+        usage >&2
+        exit 1
+        ;;
+    *)
+        echo -e "$(grep -o '[^/]*$' <<<"$SHELL"): command $1 not found\n"
+        search_package "$1"
+        exit
+        ;;
 esac
