@@ -13,7 +13,8 @@ gencache() {
 }
 
 preparecache() {
-    if pacman -F vim 2>&1 | grep -q 'No repo files found'; then
+    # Check if file databases exist and are usable
+    if ! pacman -F vim &>/dev/null; then
         if imenu --cli -c "command not found. would you like to search for it"?; then
             sudo pacman -Fy
         else
